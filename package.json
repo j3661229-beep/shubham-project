@@ -7,6 +7,6 @@
     "install-backend": "cd backend && npm install",
     "build-frontend": "cd frontend && npm run build",
     "build": "npm run vercel-build",
-    "vercel-build": "npm run install-frontend && npm run build-frontend"
+    "vercel-build": "cd frontend && npm install && npm run build && cd .. && rm -rf public && mv frontend/dist public"
   }
 }
