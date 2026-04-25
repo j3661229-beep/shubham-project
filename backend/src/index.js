@@ -15,13 +15,23 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'API is running' });
 });
 
-// Middleware to ensure DB connection
+// Middleware to ensure DB connection (handles Neon cold starts)
+let isConnected = false;
 app.use(async (req, res, next) => {
+  if (req.path === '/api/health') return next();
+  
   try {
-    await connectDB();
+    if (!isConnected) {
+      await connectDB();
+      isConnected = true;
+    }
     next();
   } catch (error) {
-    res.status(500).json({ error: 'Database connection failed' });
+    console.error('CRITICAL DB ERROR:', error);
+    res.status(500).json({ 
+      error: 'Database connection failed', 
+      message: error.message 
+    });
   }
 });
 
